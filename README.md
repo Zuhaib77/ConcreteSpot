@@ -64,12 +64,23 @@ source venv/bin/activate  # Linux/Mac
 # Install dependencies
 pip install -r requirements.txt
 
-# Download trained model (6MB)
-# Place yolov8_concrete.pt in models/ folder
-# (Contact maintainer for model file)
-
-# Run the application
+# Run the application (model included in repo)
 cd src && python main.py
+```
+
+### Dataset Download (For Training)
+
+📁 **[Download Dataset from Google Drive](https://drive.google.com/drive/u/0/folders/1NMA89N6kRFN7ZuZRKDPuJ2VL7paVIfQK)**
+
+Extract to `dataset/` folder:
+```
+dataset/
+├── images/
+│   ├── train/  (3334 images)
+│   ├── val/    (375 images)
+│   └── test/   (238 images)
+├── labels/
+└── data.yaml
 ```
 
 ---

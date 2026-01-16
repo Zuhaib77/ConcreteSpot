@@ -49,6 +49,7 @@ data/database.db
 models/*.pt
 models/*.pth
 models/*.onnx
+!models/yolov8_concrete.pt
 
 # Dataset (large - download separately)
 dataset/
