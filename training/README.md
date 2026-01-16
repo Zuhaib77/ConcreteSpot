@@ -5,7 +5,7 @@
 ### 1. Train YOLOv8 Detector
 
 ```bash
-cd /home/zuhaib/Projects_files/DRDO/Concrete_Damage_Classification
+cd ConcreteSpot  # Your project root
 source venv/bin/activate
 
 python training/train_detector.py \

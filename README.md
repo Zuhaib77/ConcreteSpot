@@ -2,7 +2,7 @@
 
 **AI-Powered Concrete Damage Classification System**
 
-A desktop application for detecting and classifying concrete structural damage using deep learning. Built for DRDO infrastructure monitoring with offline capability.
+A desktop application for detecting and classifying concrete structural damage using deep learning. Built for infrastructure monitoring with offline capability.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red)
@@ -212,6 +212,5 @@ MIT License - see [LICENSE](LICENSE)
 
 ## 🙏 Acknowledgments
 
-- DRDO for project requirements
 - Ultralytics for YOLOv8
 - HRCDS and Multi-Feature Concrete Damage datasets
