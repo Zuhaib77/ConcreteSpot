@@ -16,6 +16,100 @@
 
 ---
 
+## 🖥️ WINDOWS SETUP INSTRUCTIONS (For AI Agent)
+
+> **IMPORTANT**: Follow these steps exactly to set up the project on Windows.
+
+### Prerequisites Check
+Before starting, verify user has:
+- Windows 10/11
+- NVIDIA GPU with drivers installed
+- Python 3.10+ installed
+- Git installed
+
+### Step 1: Clone Repository
+```powershell
+cd C:\Projects  # or user's preferred folder
+git clone https://github.com/Zuhaib77/ConcreteSpot.git
+cd ConcreteSpot
+```
+
+### Step 2: Create Virtual Environment
+```powershell
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+### Step 3: Install PyTorch with CUDA First
+```powershell
+# CRITICAL: Install PyTorch with CUDA before other packages
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+```
+
+### Step 4: Install Other Dependencies
+```powershell
+pip install -r requirements.txt
+```
+
+### Step 5: Verify GPU Access
+```powershell
+python -c "import torch; print(f'CUDA Available: {torch.cuda.is_available()}'); print(f'GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"None\"}')"
+```
+**Expected output**: `CUDA Available: True` and GPU name
+
+### Step 6: Download Dataset from Google Drive
+1. Go to: https://drive.google.com/drive/u/0/folders/1NMA89N6kRFN7ZuZRKDPuJ2VL7paVIfQK
+2. Download all contents
+3. Extract to `ConcreteSpot\dataset\`
+
+Verify structure:
+```
+ConcreteSpot\dataset\
+├── images\
+│   ├── train\  (3334 images)
+│   ├── val\    (375 images)
+│   └── test\   (238 images)
+├── labels\
+│   ├── train\
+│   ├── val\
+│   └── test\
+└── data.yaml
+```
+
+### Step 7: Verify Model File Exists
+```powershell
+dir models\yolov8_concrete.pt
+```
+Should show 6MB file. If missing, the trained model wasn't cloned properly.
+
+### Step 8: Test Application
+```powershell
+cd src
+python main.py
+```
+
+### Step 9: Test Training Pipeline
+```powershell
+cd ..  # back to project root
+python training/evaluate.py --model models/yolov8_concrete.pt --data dataset/data.yaml
+```
+
+### Common Windows Issues & Fixes
+
+| Issue | Solution |
+|-------|----------|
+| `torch.cuda.is_available()` returns False | Install PyTorch with CUDA: `pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121` |
+| Qt platform plugin error | Set env var: `set QT_QPA_PLATFORM_PLUGIN_PATH=` (empty) |
+| Permission denied on venv | Run PowerShell as Administrator |
+| pip SSL error | Use: `pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org <package>` |
+
+### Ready to Continue?
+Once setup is complete, these are the next tasks:
+1. Run 150 epochs training
+2. Run 200 epochs training  
+3. Generate comparison graphs
+4. Start YOLO version comparison (v6, v7, v8)
+
 ## What Has Been Done
 
 ### Phase 1-5: Core Application ✅
