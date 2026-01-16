@@ -1,0 +1,206 @@
+# ConcreteSpot 🏗️
+
+**AI-Powered Concrete Damage Classification System**
+
+A desktop application for detecting and classifying concrete structural damage using deep learning. Built for DRDO infrastructure monitoring with offline capability.
+
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red)
+![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-green)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
+---
+
+## 🎯 Features
+
+- **4 Damage Types Detection**: Crack, Spalling, Corrosion, Exposed Rebar
+- **High Accuracy**: 97.52% mAP@50 on test dataset
+- **Offline Operation**: Fully functional without internet
+- **Desktop GUI**: Windows 7-style interface using PySide6
+- **Multiple Input Modes**: Single image, batch processing, video analysis
+- **PDF Reports**: Generate detailed analysis reports
+- **History Tracking**: SQLite database for storing results
+
+---
+
+## 📊 Model Performance
+
+| Metric | Score |
+|--------|-------|
+| **mAP@50** | 97.52% |
+| **mAP@50-95** | 81.56% |
+| **Precision** | 88.6% |
+| **Recall** | 80.9% |
+
+### Per-Class Performance
+
+| Class | AP@50 |
+|-------|-------|
+| Crack | 96.1% |
+| Spalling | 99.5% |
+| Corrosion | 80.5% |
+| Exposed Rebar | 98.0% |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.10+
+- NVIDIA GPU with CUDA (recommended)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Zuhaib77/ConcreteSpot.git
+cd ConcreteSpot
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate   # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Download trained model (6MB)
+# Place yolov8_concrete.pt in models/ folder
+# (Contact maintainer for model file)
+
+# Run the application
+cd src && python main.py
+```
+
+---
+
+## 📁 Project Structure
+
+```
+ConcreteSpot/
+├── src/
+│   ├── main.py                 # Application entry point
+│   ├── app/
+│   │   ├── main_window.py      # Main window UI
+│   │   ├── widgets/            # UI components
+│   │   └── dialogs/            # Dialog windows
+│   ├── core/
+│   │   ├── detector.py         # YOLOv8 damage detector
+│   │   ├── classifier.py       # Severity classifier
+│   │   └── pipeline.py         # Inference pipeline
+│   ├── data/
+│   │   ├── models.py           # Data models
+│   │   ├── database.py         # SQLite manager
+│   │   └── storage.py          # File storage
+│   ├── reports/
+│   │   └── pdf_generator.py    # PDF report generation
+│   └── styles/
+│       └── win7.py             # Windows 7 stylesheet
+├── training/
+│   ├── train_detector.py       # YOLOv8 training script
+│   ├── train_progressive.py    # Progressive epoch training
+│   ├── train_classifier.py     # Severity classifier training
+│   ├── evaluate.py             # Model evaluation
+│   ├── convert_hrcds.py        # LabelMe to YOLO converter
+│   └── convert_voc.py          # Pascal VOC to YOLO converter
+├── docs/
+│   ├── USER_MANUAL.md          # User guide
+│   └── DEVELOPMENT_JOURNEY.md  # Development notes
+├── models/                     # Trained models (gitignored)
+├── dataset/                    # Training data (gitignored)
+├── requirements.txt
+├── concretespot.spec           # PyInstaller config
+├── build_linux.sh              # Linux build script
+├── build_windows.bat           # Windows build script
+└── LICENSE
+```
+
+---
+
+## 🔧 Training Your Own Model
+
+### Dataset Preparation
+
+1. Organize images in YOLO format:
+```
+dataset/
+├── images/
+│   ├── train/
+│   └── val/
+├── labels/
+│   ├── train/
+│   └── val/
+└── data.yaml
+```
+
+2. Label format (YOLO):
+```
+<class_id> <x_center> <y_center> <width> <height>
+# Classes: 0=crack, 1=spalling, 2=corrosion, 3=exposed_rebar
+```
+
+### Train
+
+```bash
+# Basic training
+python training/train_detector.py --dataset /path/to/dataset --epochs 100
+
+# Progressive training with graphs
+python training/train_progressive.py --epochs 50 100 150 --augmentation balanced
+```
+
+### Evaluate
+
+```bash
+python training/evaluate.py --model models/yolov8_concrete.pt --data dataset/data.yaml
+```
+
+---
+
+## 📦 Building Executable
+
+### Linux
+```bash
+./build_linux.sh
+# Output: dist/ConcreteSpot/ConcreteSpot
+```
+
+### Windows
+```batch
+build_windows.bat
+# Use Inno Setup with installer.iss for installer
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| GUI Framework | PySide6 (Qt6) |
+| Object Detection | YOLOv8 (Ultralytics) |
+| Deep Learning | PyTorch |
+| Image Processing | OpenCV, Pillow |
+| Database | SQLite |
+| PDF Generation | ReportLab |
+| Packaging | PyInstaller |
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE)
+
+---
+
+## 👤 Author
+
+**Zuhaib** - [GitHub](https://github.com/Zuhaib77)
+
+---
+
+## 🙏 Acknowledgments
+
+- DRDO for project requirements
+- Ultralytics for YOLOv8
+- HRCDS and Multi-Feature Concrete Damage datasets
