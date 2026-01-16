@@ -57,6 +57,8 @@ dataset/
 
 # Training runs and outputs
 runs/
+!runs/detect/
+!runs/detect/yolov8n_100ep_balanced/
 training_results/
 evaluation_results/
 *.zip
