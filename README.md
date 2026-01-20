@@ -214,3 +214,48 @@ MIT License - see [LICENSE](LICENSE)
 
 - Ultralytics for YOLOv8
 - HRCDS and Multi-Feature Concrete Damage datasets
+
+---
+
+## 📝 Development Log
+
+### January 16-17, 2026 - Progressive Training Experiments
+
+**Environment Setup (Windows)**
+- GPU: NVIDIA GeForce RTX 4070 Laptop GPU
+- PyTorch: 2.9.1+cu126
+- Python: 3.13.7
+- Ultralytics: 8.4.4
+
+**Dataset (Corrected)**
+- Training: 3334 images
+- Validation: 375 images
+- Test: 238 images
+- Classes: crack, spalling, corrosion, exposed_rebar
+
+**Training Runs**
+
+| Run | Epochs | Model Path | mAP@50 | mAP@50-95 |
+|-----|--------|------------|--------|-----------|
+| Baseline | 100 | `models/yolov8_concrete.pt` | 68.18% | 49.11% |
+| Exp-1 | 150 | `runs/detect/yolov8n_150ep_balanced2/weights/best.pt` | 72.03% | 52.02% |
+| **Exp-2** | **200** | `runs/detect/yolov8n_200ep_balanced3/weights/best.pt` | **72.61%** | **53.49%** |
+
+**Best Model: 200 epochs (mAP@50: 72.61%)**
+
+| Metric | Score |
+|--------|-------|
+| mAP@50 | 72.61% |
+| mAP@50-95 | 53.49% |
+| Precision | 69.95% |
+| Recall | 72.17% |
+
+> See [docs/TRAINING_COMPARISON.md](docs/TRAINING_COMPARISON.md) for detailed comparison.
+
+**Next Steps**
+- [x] Complete 150 epoch training on full dataset
+- [x] Complete 200 epoch training on full dataset
+- [x] Evaluate on test set
+- [ ] Explore severity-labeled datasets for classifier training
+- [ ] YOLO version comparison (v6, v7, v8)
+
