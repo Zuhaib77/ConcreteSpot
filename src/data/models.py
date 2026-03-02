@@ -9,6 +9,7 @@ class DamageType(Enum):
     SPALLING = "spalling"
     CORROSION = "corrosion"
     EXPOSED_REBAR = "exposed_rebar"
+    EFFLORESCENCE = "efflorescence"
 
 
 class Severity(Enum):

@@ -15,9 +15,10 @@ class InferencePipeline:
     def __init__(
         self,
         detector_model_path: Optional[Path] = None,
-        classifier_model_path: Optional[Path] = None
+        classifier_model_path: Optional[Path] = None,
+        use_ensemble: bool = True  # Default to ensemble for high accuracy
     ):
-        self.detector = ConcreteDetector(detector_model_path)
+        self.detector = ConcreteDetector(detector_model_path, use_ensemble=use_ensemble)
         self.classifier = SeverityClassifier(classifier_model_path)
         self._initialized = False
     

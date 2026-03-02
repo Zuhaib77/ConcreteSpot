@@ -45,27 +45,38 @@ data/images/
 data/reports/
 data/database.db
 
-# Models (large files - download separately)
+# Models (large files - host via GitHub Releases)
+models/**/*.pt
+models/**/*.pth
+models/**/*.onnx
 models/*.pt
 models/*.pth
-models/*.onnx
-!models/yolov8_concrete.pt
+
+# YOLO downloaded weights
+*.pt
+!requirements.txt
 
 # Dataset (large - download separately)
 dataset/
+datasets/
+v2_fresh/
 *.cache
 
 # Training runs and outputs
 runs/
-!runs/detect/
-!runs/detect/yolov8n_100ep_balanced/
 training_results/
 evaluation_results/
 *.zip
 
-# YOLO downloaded weights
-yolov8*.pt
-yolo11*.pt
+# Research paper (kept private)
+research_paper/
+
+# One-time / debug scripts
+debug_models.py
+reorganize_project.py
+generate_paper_figs.py
+generate_paper_samples.py
+test_ensemble_result.jpg
 
 # Logs
 *.log
@@ -78,3 +89,6 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Gemini
+.gemini/

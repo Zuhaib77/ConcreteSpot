@@ -2,7 +2,8 @@ from pathlib import Path
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-    QTabWidget, QStatusBar, QLabel, QMessageBox
+    QTabWidget, QStatusBar, QLabel, QMessageBox,
+    QComboBox, QGroupBox
 )
 from PySide6.QtCore import Qt
 
@@ -18,6 +19,19 @@ from data.storage import Storage
 
 
 class MainWindow(QMainWindow):
+    # Available models configuration
+    AVAILABLE_MODELS = {
+        "V1 - 68K Balanced (47% mAP)": "models/v1_68k_balanced_100ep/best.pt",
+        "V2 - Curated Quality": "models/versions/v2_curated/best.pt",
+        "V3 - Pure Quality (66% mAP)": "models/versions/v3_pure_quality/best.pt",
+        "V4 - Organized (63% mAP)": "models/versions/v4_organized/best.pt",
+        "V5 - dacl10k": "runs/detect/runs/detect/models/v5_dacl10k/train/weights/best.pt",
+        "V6 - Semi-Auto": "runs/detect/runs/detect/models/v6_semiauto/train/weights/best.pt",
+        "Ensemble (92.8% mAP)": "ENSEMBLE",
+        "CODEBRIM Trained (v2 Fresh)": "models/codebrim_v1.pt",
+        "YOLOv8 Concrete (Default)": "models/yolov8_concrete.pt",
+    }
+    
     def __init__(self):
         super().__init__()
         
@@ -26,8 +40,8 @@ class MainWindow(QMainWindow):
         
         self._setup_paths()
         self._init_components()
-        self._setup_ui()
         self._setup_statusbar()
+        self._setup_ui()
     
     def _setup_paths(self):
         self.app_dir = Path(__file__).parent.parent.parent
@@ -41,13 +55,18 @@ class MainWindow(QMainWindow):
         self.database = Database(self.data_dir / "database.db")
         self.storage = Storage(self.data_dir)
         
-        detector_path = self.models_dir / "yolov8_concrete.pt"
+        # Start with V3 as default (best single model)
+        detector_path = self.app_dir / "models/versions/v3_pure_quality/best.pt"
+        if not detector_path.exists():
+            detector_path = self.models_dir / "yolov8_concrete.pt"
+        
         classifier_path = self.models_dir / "inceptionv3_severity.pt"
         
         self.pipeline = InferencePipeline(
             detector_model_path=detector_path if detector_path.exists() else None,
             classifier_model_path=classifier_path if classifier_path.exists() else None
         )
+        self.current_model_name = "V3 - Pure Quality (66% mAP)"
     
     def _setup_ui(self):
         central_widget = QWidget()
@@ -57,6 +76,34 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(8, 8, 8, 8)
         main_layout.setSpacing(8)
         
+        # Model selector at the top
+        model_group = QGroupBox("Model Selection")
+        model_layout = QHBoxLayout(model_group)
+        
+        model_label = QLabel("Detection Model:")
+        self.model_combo = QComboBox()
+        self.model_combo.setMinimumWidth(300)
+        
+        # Add available models
+        for name, path in self.AVAILABLE_MODELS.items():
+            full_path = self.app_dir / path if path != "ENSEMBLE" else None
+            if path == "ENSEMBLE" or (full_path and full_path.exists()):
+                self.model_combo.addItem(name, path)
+        
+        self.model_combo.currentTextChanged.connect(self._on_model_changed)
+        
+        # Set current model
+        index = self.model_combo.findText(self.current_model_name)
+        if index >= 0:
+            self.model_combo.setCurrentIndex(index)
+        
+        model_layout.addWidget(model_label)
+        model_layout.addWidget(self.model_combo)
+        model_layout.addStretch()
+        
+        main_layout.addWidget(model_group)
+        
+        # Tab widget
         self.tab_widget = QTabWidget()
         
         self.single_image_tab = SingleImageTab(
@@ -79,6 +126,30 @@ class MainWindow(QMainWindow):
         
         main_layout.addWidget(self.tab_widget)
     
+    def _on_model_changed(self, model_name: str):
+        """Handle model selection change."""
+        path = self.model_combo.currentData()
+        
+        if path == "ENSEMBLE":
+            # Enable ensemble mode
+            self.pipeline.detector.use_ensemble = True
+            self.pipeline.detector.ensemble_detector = None  # Force reload
+            self.set_status(f"Switched to Ensemble Mode (5 specialists)")
+            self.model_label.setText(f"Model: Ensemble")
+        else:
+            # Single model mode
+            self.pipeline.detector.use_ensemble = False
+            full_path = self.app_dir / path
+            if full_path.exists():
+                self.pipeline.detector.model_path = full_path
+                self.pipeline.detector.model = None  # Force reload
+                self.set_status(f"Switched to {model_name}")
+                self.model_label.setText(f"Model: {model_name}")
+            else:
+                QMessageBox.warning(self, "Model Not Found", f"Model file not found:\n{full_path}")
+        
+        self.current_model_name = model_name
+    
     def _setup_statusbar(self):
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
@@ -95,18 +166,8 @@ class MainWindow(QMainWindow):
         self.status_bar.addPermanentWidget(self.gpu_label)
     
     def _update_model_status(self):
-        detector_path = self.models_dir / "yolov8_concrete.pt"
-        classifier_path = self.models_dir / "inceptionv3_severity.pt"
-        
-        if detector_path.exists() and classifier_path.exists():
-            self.model_label.setText("Models: Custom")
-            self.model_label.setStyleSheet("color: green;")
-        elif detector_path.exists() or classifier_path.exists():
-            self.model_label.setText("Models: Partial")
-            self.model_label.setStyleSheet("color: orange;")
-        else:
-            self.model_label.setText("Models: Demo Mode")
-            self.model_label.setStyleSheet("color: #888;")
+        self.model_label.setText(f"Model: {self.current_model_name}")
+        self.model_label.setStyleSheet("color: green;")
     
     def _update_gpu_status(self):
         import torch
@@ -124,4 +185,3 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         self.database.close()
         event.accept()
-
