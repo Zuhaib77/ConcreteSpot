@@ -51,10 +51,16 @@ models/**/*.pth
 models/**/*.onnx
 models/*.pt
 models/*.pth
+# Exception: keep specialist ensemble weights (best models)
+!models/specialists/**/*.pt
 
 # YOLO downloaded weights
 *.pt
 !requirements.txt
+# Exception: keep specialist ensemble weights (best models)
+!models/specialists/
+!models/specialists/**
+!models/specialists/**/*.pt
 
 # Dataset (large - download separately)
 dataset/
